@@ -1,0 +1,32 @@
+---
+- name: Ensure Nginx is installed and it is the latest version
+  become: true
+  ansible.builtin.apt:
+    name: "nginx"
+    state: latest
+
+- name: Start nginx
+  become: true
+  ansible.builtin.service:
+    name: "nginx"
+    state: started
+
+- name: Copy the Nginx config file and restart nginx
+  become: true
+  copy:
+    src: ./nginx.cfg
+    dest: /etc/nginx/sites-available/nginx.cfg
+    force: yes
+
+- name: Create symlink
+  become: true
+  file:
+    src: /etc/nginx/sites-available/nginx.cfg
+    dest: /etc/nginx/sites-enabled/default
+    state: link
+
+- name: Restart nginx
+  become: true
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
